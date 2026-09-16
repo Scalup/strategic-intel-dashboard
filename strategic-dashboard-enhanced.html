@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Strategic Intelligence Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --priority: #f39c12;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        header .subtitle { font-size: 0.9rem; opacity: 0.9; }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        nav {
+            background: white;
+            padding: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .filter-btn, .map-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .filter-btn:hover, .map-btn:hover { background: #f0f0f0; }
+        .filter-btn.active, .map-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        .search-box { margin-left: auto; }
+        .search-box input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+            transition: width 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            width: 300px;
+        }
+
+        .feed-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .feed-item {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+        .feed-item.priority {
+            border-left-color: var(--priority) !important;
+            box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.2);
+        }
+        .feed-item.priority::before {
+            content: "⭐";
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.2rem;
+            color: var(--priority);
+        }
+        .feed-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .feed-item h3 {
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        .feed-item h3 a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .feed-item h3 a:hover { color: var(--accent); }
+        .feed-item .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        .feed-item .source {
+            font-weight: 600;
+        }
+        .feed-item .source.priority {
+            color: var(--priority) !important;
+        }
+        .feed-item .date { color: #7f8c8d; }
+        .feed-item .description {
+            color: #444;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .feed-item .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .feed-item .tag {
+            background: #f0f0f0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #555;
+        }
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        .loading::after {
+            content: "";
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+        }
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        .map-container {
+            height: 500px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: #eee;
+        }
+        #map { height: 100%; width: 100%; border-radius: 8px; }
+        .stats-bar {
+            background: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            grid-column: 1 / -1;
+        }
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 768px) {
+            .feed-container { grid-template-columns: 1fr; }
+            nav { flex-direction: column; align-items: stretch; }
+            .search-box { margin-left: 0; width: 100%; }
+            .search-box input { width: 100%; }
+            .main-container { grid-template-columns: 1fr; }
+            .map-container { height: 400px; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌍 Strategic Intelligence Dashboard</h1>
+        <p class="subtitle">Auto-updated every 4 hours via GitHub Actions | Priority sources highlighted</p>
+    </header>
+
+    <nav>
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="priority">⭐ Priority</button>
+        <button class="filter-btn" data-filter="intelligence">Intelligence</button>
+        <button class="filter-btn" data-filter="military">Military</button>
+        <button class="filter-btn" data-filter="cyber">Cyber</button>
+        <button class="filter-btn" data-filter="economic">Economic</button>
+        <button class="filter-btn" data-filter="niche">Niche</button>
+        <button class="filter-btn" data-filter="conflict">Conflict</button>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="🔍 Search...">
+        </div>
+        <button class="filter-btn" id="refresh-btn">🔄 Refresh</button>
+    </nav>
+
+    <div class="main-container">
+        <div class="feed-section">
+            <div class="feed-container" id="feed-container">
+                <div class="loading">Loading feed from GitHub...</div>
+            </div>
+            <div class="stats-bar" id="stats-bar">
+                <div class="stat">
+                    <div class="stat-value" id="total-items">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="priority-items">0</div>
+                    <div class="stat-label">Priority</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="mapped-items">0</div>
+                    <div class="stat-label">On Map</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="last-updated">Never</div>
+                    <div class="stat-label">Last Updated</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-section">
+            <div class="map-header">
+                <h2>🗺️ Geostrategic Map</h2>
+                <div class="map-controls">
+                    <button class="map-btn active" id="map-all">All</button>
+                    <button class="map-btn" id="map-conflict">Conflicts</button>
+                    <button class="map-btn" id="map-intel">Intel</button>
+                </div>
+            </div>
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>⚡ Last updated: <span id="update-time">Never</span> |
+        <a href="strategic-feed.xml" target="_blank">📡 RSS Feed</a> |
+        <a href="#" id="export-btn">📥 Export to JSON</a> |
+        <a href="#" id="opml-btn">📋 Get OPML</a></p>
+    </footer>
+
+    <script>
+        // Location mapping for geocoding
+        const LOCATION_MAP = {
+            'russia': { lat: 60, lng: 100, zoom: 4, name: 'Russia' },
+            'ukraine': { lat: 48.3794, lng: 31.1656, zoom: 6, name: 'Ukraine' },
+            'china': { lat: 35.8617, lng: 104.1954, zoom: 4, name: 'China' },
+            'usa': { lat: 37.0902, lng: -95.7129, zoom: 4, name: 'USA' },
+            'united states': { lat: 37.0902, lng: -95.7129, zoom: 4, name: 'USA' },
+            'uk': { lat: 55.3781, lng: -3.4360, zoom: 5, name: 'UK' },
+            'france': { lat: 46.6034, lng: 1.8883, zoom: 5, name: 'France' },
+            'germany': { lat: 51.1657, lng: 10.4515, zoom: 5, name: 'Germany' },
+            'estonia': { lat: 58.5953, lng: 25.0136, zoom: 7, name: 'Estonia' },
+            'moldova': { lat: 47.4116, lng: 28.3699, zoom: 7, name: 'Moldova' },
+            'kyiv': { lat: 50.4501, lng: 30.5234, zoom: 10, name: 'Kyiv' },
+            'moscow': { lat: 55.7558, lng: 37.6173, zoom: 10, name: 'Moscow' },
+            'washington': { lat: 38.9072, lng: -77.0369, zoom: 10, name: 'Washington' },
+            'london': { lat: 51.5074, lng: -0.1278, zoom: 10, name: 'London' },
+            'paris': { lat: 48.8566, lng: 2.3522, zoom: 10, name: 'Paris' },
+            'berlin': { lat: 52.5200, lng: 13.4050, zoom: 10, name: 'Berlin' },
+            'beijing': { lat: 39.9042, lng: 116.4074, zoom: 10, name: 'Beijing' },
+            'nato': { lat: 50.8801, lng: 4.3832, zoom: 4, name: 'NATO HQ' },
+            'eu': { lat: 50.8801, lng: 4.3832, zoom: 4, name: 'EU HQ' },
+            'baltic': { lat: 57.5, lng: 20, zoom: 5, name: 'Baltic Sea' },
+            'black sea': { lat: 42.5, lng: 35, zoom: 6, name: 'Black Sea' },
+            'middle east': { lat: 31.4165, lng: 35, zoom: 5, name: 'Middle East' },
+            'donbas': { lat: 48.5, lng: 38, zoom: 7, name: 'Donbas' },
+            'crimea': { lat: 45, lng: 34, zoom: 7, name: 'Crimea' },
+            'taiwan': { lat: 23.5, lng: 121, zoom: 8, name: 'Taiwan' },
+            'south china sea': { lat: 15, lng: 115, zoom: 5, name: 'South China Sea' }
+        };
+
+        // Priority sources
+        const PRIORITY_SOURCES = [
+            "ODNI Annual Threat Assessment",
+            "Estonian EFIS 2026",
+            "BND Military Spending",
+            "ACLED Conflict Data",
+            "ISW Russia Reports",
+            "CIA FOIA",
+            "MI5",
+            "DGSE Interview",
+            "CISA Alerts",
+            "MITRE ATT&CK"
+        ];
+
+        // Category colors
+        const CATEGORY_COLORS = {
+            intelligence: '#3498db',
+            military: '#e74c3c',
+            cyber: '#2ecc71',
+            economic: '#f39c12',
+            niche: '#9b59b6',
+            conflict: '#e67e22',
+            priority: '#f39c12'
+        };
+
+        // DOM elements
+        const feedContainer = document.getElementById('feed-container');
+        const mapContainer = document.getElementById('map');
+        const updateTimeSpan = document.getElementById('update-time');
+        const totalItemsSpan = document.getElementById('total-items');
+        const priorityItemsSpan = document.getElementById('priority-items');
+        const mappedItemsSpan = document.getElementById('mapped-items');
+        const lastUpdatedSpan = document.getElementById('last-updated');
+        const searchInput = document.getElementById('search-input');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const opmlBtn = document.getElementById('opml-btn');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const mapBtns = document.querySelectorAll('.map-btn');
+        const statsBar = document.getElementById('stats-bar');
+
+        // Global state
+        let allItems = [];
+        let currentFilter = 'all';
+        let map;
+        let markers = [];
+        let currentMapFilter = 'all';
+
+        // Initialize map
+        function initMap() {
+            map = L.map('map').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+        }
+
+        // Extract location from text
+        function extractLocation(text) {
+            if (!text) return null;
+            const textLower = text.toLowerCase();
+            for (const [key, loc] of Object.entries(LOCATION_MAP)) {
+                if (textLower.includes(key)) {
+                    return loc;
+                }
+            }
+            return null;
+        }
+
+        // Add marker to map
+        function addMarker(item, lat, lng, color) {
+            const icon = L.divIcon({
+                className: 'custom-icon',
+                html: `<div style="background:${color}; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold;">${item.priority ? '⭐' : '•'}</div>`,
+                iconSize: [20, 20]
+            });
+
+            const marker = L.marker([lat, lng], { icon }).addTo(map);
+            marker.bindPopup(`
+                <strong>${item.title}</strong><br/>
+                <small>${item.source} • ${new Date(item.pubDate).toLocaleDateString()}</small><br/>
+                <a href="${item.link}" target="_blank">Read more</a>
+            `);
+            markers.push(marker);
+            return marker;
+        }
+
+        // Clear all markers
+        function clearMarkers() {
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+        }
+
+        // Filter markers by category
+        function filterMarkers(filter) {
+            clearMarkers();
+            const filteredItems = allItems.filter(item => {
+                if (filter === 'all') return true;
+                if (filter === 'conflict') return item.category === 'conflict' || extractLocation(item.title + item.description);
+                if (filter === 'intel') return item.category === 'intelligence' || item.priority;
+                return true;
+            });
+
+            filteredItems.forEach(item => {
+                const loc = extractLocation(item.title + item.description);
+                if (loc) {
+                    const color = item.priority ? CATEGORY_COLORS.priority : CATEGORY_COLORS[item.category];
+                    addMarker(item, loc.lat, loc.lng, color);
+                }
+            });
+        }
+
+        // Fetch the generated feed from GitHub
+        async function fetchGeneratedFeed() {
+            feedContainer.innerHTML = '<div class="loading">Loading feed from GitHub...</div>';
+            clearMarkers();
+
+            try {
+                // Fetch the generated XML feed
+                const response = await fetch('strategic-feed.xml');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                const text = await response.text();
+
+                // Parse the feed
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+
+                // Check for parser errors
+                const parserErrors = xmlDoc.querySelector('parsererror');
+                if (parserErrors) {
+                    throw new Error('Invalid XML: ' + parserErrors.textContent);
+                }
+
+                // Extract items
+                const items = Array.from(xmlDoc.querySelectorAll('item')).map(item => {
+                    const title = item.querySelector('title')?.textContent || 'No title';
+                    const link = item.querySelector('link')?.textContent || '#';
+                    let description = item.querySelector('description')?.textContent || '';
+                    description = description.replace(/<!\\[CDATA\[|\]\]>/g, '');
+
+                    const pubDate = item.querySelector('pubDate')?.textContent || '';
+                    const source = item.querySelector('category[domain="source"]')?.textContent ||
+                                  item.querySelector('category')?.textContent ||
+                                  'Unknown';
+
+                    const category = item.querySelector('category:not([domain])')?.textContent ||
+                                     item.querySelector('category[domain!="source"]')?.textContent ||
+                                     'niche';
+
+                    const priority = item.querySelector('category[domain="priority"]') !== null;
+                    const locationName = item.querySelector('category[domain="location"]')?.textContent;
+                    const location = locationName ? LOCATION_MAP[locationName.toLowerCase()] : null;
+
+                    return {
+                        title,
+                        link,
+                        description: description.substring(0, 500),
+                        pubDate: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+                        source,
+                        category,
+                        priority,
+                        location
+                    };
+                });
+
+                // Sort: priority first, then by date
+                items.sort((a, b) => {
+                    if (a.priority && !b.priority) return -1;
+                    if (!a.priority && b.priority) return 1;
+                    return new Date(b.pubDate) - new Date(a.pubDate);
+                });
+
+                allItems = items;
+                updateStats();
+                updateLastUpdate();
+                renderFeed(items);
+                filterMarkers(currentMapFilter);
+                statsBar.style.display = 'flex';
+
+                if (items.length === 0) {
+                    feedContainer.innerHTML = '<div class="empty">No items found in the feed. The Python script may have failed.</div>';
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                feedContainer.innerHTML = `
+                    <div class="empty">
+                        ⚠️ Error loading feed: ${error.message}
+                        <p>This usually means the <code>strategic-feed.xml</code> file was not generated correctly.</p>
+                        <p><strong>Solutions:</strong></p>
+                        <ol>
+                            <li>Check the GitHub Actions logs for errors.</li>
+                            <li>Ensure <code>sources.txt</code> and <code>feed_generator.py</code> are in the root of your repo.</li>
+                            <li>Try running the workflow manually in GitHub Actions.</li>
+                        </ol>
+                        <button onclick="fetchGeneratedFeed()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer;">🔄 Try Again</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render feed items
+        function renderFeed(items) {
+            if (items.length === 0) {
+                feedContainer.innerHTML = '<div class="empty">No items found</div>';
+                return;
+            }
+
+            feedContainer.innerHTML = items.map(item => {
+                const date = new Date(item.pubDate).toLocaleString();
+                const category = item.category || 'niche';
+                const color = CATEGORY_COLORS[category] || '#95a5a6';
+                const isPriority = item.priority;
+                const sourceClass = isPriority ? 'source priority' : 'source';
+
+                return `
+                    <div class="feed-item ${isPriority ? 'priority' : ''}" data-category="${category}" style="border-left-color: ${color}">
+                        <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+                        <div class="meta">
+                            <span class="${sourceClass}" style="color: ${color}">${item.source}</span>
+                            <span class="date">${date}</span>
+                        </div>
+                        <div class="description">${item.description}${item.description.length >= 500 ? '...' : ''}</div>
+                        <div class="tags">
+                            <span class="tag" style="background: ${color}20; color: ${color}">${category}</span>
+                            ${isPriority ? '<span class="tag" style="background: #f39c1220; color: #f39c12;">⭐ Priority</span>' : ''}
+                            ${item.location ? `<span class="tag" style="background: #3498db20; color: #3498db;">📍 ${item.location.name}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update statistics
+        function updateStats() {
+            totalItemsSpan.textContent = allItems.length;
+            priorityItemsSpan.textContent = allItems.filter(item => item.priority).length;
+            mappedItemsSpan.textContent = allItems.filter(item => item.location).length;
+            lastUpdatedSpan.textContent = new Date().toLocaleString();
+            updateTimeSpan.textContent = new Date().toLocaleString();
+        }
+
+        // Update last update timestamp
+        function updateLastUpdate() {
+            const now = new Date();
+            lastUpdatedSpan.textContent = now.toLocaleString();
+        }
+
+        // Filter feed
+        function filterFeed(filter) {
+            currentFilter = filter;
+            if (filter === 'all') {
+                renderFeed(allItems);
+            } else if (filter === 'priority') {
+                const priorityItems = allItems.filter(item => item.priority);
+                renderFeed(priorityItems);
+            } else {
+                const filtered = allItems.filter(item => item.category === filter);
+                renderFeed(filtered);
+            }
+        }
+
+        // Search feed
+        function searchFeed(query) {
+            const lowerQuery = query.toLowerCase();
+            const filtered = allItems.filter(item =>
+                item.title.toLowerCase().includes(lowerQuery) ||
+                item.description.toLowerCase().includes(lowerQuery) ||
+                item.source.toLowerCase().includes(lowerQuery) ||
+                (item.location && item.location.name.toLowerCase().includes(lowerQuery))
+            );
+            renderFeed(filtered);
+        }
+
+        // Export to JSON
+        function exportToJSON() {
+            const data = JSON.stringify(allItems, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategic-intel-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Generate OPML
+        function generateOPML() {
+            let opml = `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+<head>
+    <title>Strategic Intelligence Sources</title>
+    <dateCreated>${new Date().toISOString()}</dateCreated>
+</head>
+<body>
+`;
+
+            // Add priority sources first
+            const prioritySources = SOURCES.filter(s => PRIORITY_SOURCES.includes(s.name));
+            const regularSources = SOURCES.filter(s => !PRIORITY_SOURCES.includes(s.name));
+
+            [...prioritySources, ...regularSources].forEach(source => {
+                opml += `
+    <outline text="${source.name} ${PRIORITY_SOURCES.includes(source.name) ? '⭐' : ''}" title="${source.name}" type="rss" xmlUrl="${source.url}" htmlUrl="${source.url}" category="${source.category}"/>
+`;
+            });
+
+            opml += `
+</body>
+</opml>
+`;
+
+            const blob = new Blob([opml], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `strategic-sources-${new Date().toISOString().split('T')[0]}.opml`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Event listeners
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterFeed(btn.dataset.filter);
+            });
+        });
+
+        mapBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                mapBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMapFilter = btn.id.replace('map-', '');
+                filterMarkers(currentMapFilter);
+            });
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            searchFeed(e.target.value);
+        });
+
+        refreshBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            fetchGeneratedFeed();
+        });
+
+        exportBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            exportToJSON();
+        });
+
+        opmlBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            generateOPML();
+        });
+
+        // Initial load
+        initMap();
+        fetchGeneratedFeed();
+        statsBar.style.display = 'flex';
+    </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+# ============================================
+# 🇺🇸 US INTELLIGENCE & GOVERNMENT
+# ============================================
+https://archive.dni.gov/files/ODNI/documents/assessments/ATA-2026-Unclassified-Report.pdf
+https://www.cia.gov/readingroom/collection/rss.xml
+https://www.fbi.gov/feeds/press-releases
+https://www.dia.mil/News/Articles/RSS/
+https://www.nsa.gov/Resources/NSA-CSS-Media/RSS/
+https://www.state.gov/rss-feed/
+https://home.treasury.gov/rss/feed/sanctions
+https://www.cisa.gov/uscert/ncas/alerts/rss
+https://www.uscert.gov/ncas/alerts/rss
+
+# ============================================
+# 🇬🇧 UK INTELLIGENCE & GOVERNMENT
+# ============================================
+https://www.mi5.gov.uk/news/rss
+https://www.gchq.gov.uk/rss
+https://www.gov.uk/government/organisations/mi6.rss
+https://committees.parliament.uk/feeds/intelligence.rss
+https://www.rusi.org/explore-our-research/publications/feed
+https://www.chathamhouse.org/feeds/all
+
+# ============================================
+# 🇩🇪 GERMAN INTELLIGENCE & GOVERNMENT
+# ============================================
+https://www.bnd.bund.de/EN/Service/RSS/rss_node.html
+https://www.verfassungsschutz.de/EN/Service/RSS/rss_node.html
+https://www.bmvg.de/en/feeds/press-releases
+https://www.bundeswehr.de/en/feeds/news
+
+# ============================================
+# 🇫🇷 FRENCH INTELLIGENCE & GOVERNMENT
+# ============================================
+https://www.senat.fr/rap/r25-227-1/r25-227-1.rss
+https://www.defense.gouv.fr/rss/actualites.xml
+https://www.ssi.gouv.fr/en/actualite/feed/
+https://www.diplomatie.gouv.fr/en/feeds/press-releases
+https://www.lemonde.fr/rss/une.xml
+https://www.lefigaro.fr/rss/figaro_actualites.xml
+https://www.liberation.fr/rss/
+
+# ============================================
+# 🇪🇪 ESTONIAN & BALTIC INTELLIGENCE
+# ============================================
+https://www.valisluureamet.ee/en/rss
+https://raport.valisluureamet.ee/2026/assets/VLA_ENG-raport_2026_WEB.pdf
+https://www.kapo.ee/en/rss
+
+# ============================================
+# 🌍 THINK TANKS (GLOBAL)
+# ============================================
+https://www.csis.org/feeds/all
+https://www.rand.org/pubs/feeds/all.rss
+https://www.chathamhouse.org/feeds/all
+https://www.ifri.org/en/feeds/all
+https://www.sipri.org/feeds/all
+https://www.iiss.org/feeds/all
+https://www.atlanticcouncil.org/feeds/all
+https://www.cnas.org/feeds/all
+https://www.brookings.edu/feeds/all
+https://www.cfr.org/feeds/all
+https://www.iss.europa.eu/feeds/all
+
+# ============================================
+# 🌍 THINK TANKS (REGIONAL)
+# ============================================
+https://www.isn.ethz.ch/rss/feeds/all
+https://www.clingendael.org/feeds/all
+https://www.cfr.org/feeds/region/middle-east
+https://www.cfr.org/feeds/region/asia
+https://www.cfr.org/feeds/region/europe
+
+# ============================================
+# 🔍 OSINT & INVESTIGATIVE
+# ============================================
+https://www.bellingcat.com/feed/
+https://www.occrp.org/en/feed/
+https://www.theins.ru/en/feed/
+https://www.insightcrime.org/feed/
+https://osintcurio.us/feed/
+https://www.osint.directory/feed/
+https://www.darknetdiaries.com/feed/
+https://krebsonsecurity.com/feed/
+https://www.thehackernews.com/feeds/posts
+https://www.bleepingcomputer.com/feed/
+https://threatpost.com/feed/
+https://www.darkreading.com/rss.xml
+https://www.cyberscoop.com/feed/
+
+# ============================================
+# 🛡️ CYBERSECURITY & THREAT INTEL
+# ============================================
+https://attack.mitre.org/feeds/attack-patterns.json
+https://www.cisa.gov/uscert/ncas/alerts/rss
+https://www.uscert.gov/ncas/alerts/rss
+https://www.nsa.gov/Resources/NSA-CSS-Media/RSS/
+https://www.cyberthreatintelligence.com/feed/
+https://www.recordedfuture.com/feed/
+https://www.proofpoint.com/us/threat-insight/feed
+https://www.crowdstrike.com/blog/feed/
+https://www.fireeye.com/blog/feed/
+https://www.paloaltonetworks.com/blog/feed/
+
+# ============================================
+# ⚔️ MILITARY & DEFENSE
+# ============================================
+https://www.janes.com/defence-news/rss
+https://www.defensenews.com/rss/
+https://breakingdefense.com/feed/
+https://warontherocks.com/feed/
+https://www.thedrive.com/feeds/rss
+https://www.military.com/news/rss
+https://www.army.mil/rss/feed/
+https://www.navy.mil/rss/feed/
+https://www.af.mil/rss/feed/
+https://www.marines.mil/rss/feed/
+https://www.defense.gov/News/Feature-Stories/rss/
+
+# ============================================
+# 💰 ECONOMIC INTELLIGENCE & SANCTIONS
+# ============================================
+https://www.oilprice.com/feed/
+https://www.mining.com/feed/
+https://www.ft.com/rss/stream/3e37083e-36d4-4d86-8265-56a3735882f7
+https://www.bloomberg.com/feeds/markets/
+http://feeds.reuters.com/reuters/businessNews
+https://www.sanctionsalert.com/feed/
+https://www.complianceweek.com/feed/
+https://www.acams.org/feed/
+https://www.ofac.treas.gov/rss/feed
+
+# ============================================
+# 🌍 CONFLICT & WAR TRACKING
+# ============================================
+https://acleddata.com/feed/
+https://heidi.news/feed/
+https://www.understandingwar.org/feed
+https://liveuamap.com/feed
+https://www.iswresearch.org/feed
+https://www.syriadeeply.org/feed/
+
+# ============================================
+# 🚢 MARITIME & SHIPPING
+# ============================================
+https://www.marinetraffic.com/en/p/feed
+https://lloydslist.maritimeintelligence.informa.com/feed/
+https://www.maritime-executive.com/feed/
+https://splash247.com/feed/
+https://www.tradewindsnews.com/feed/
+
+# ============================================
+# ✈️ AVIATION & DRONES
+# ============================================
+https://aviationweek.com/rss
+https://dronedj.com/feed/
+https://www.thedrive.com/feeds/rss
+https://www.flightglobal.com/feed/
+https://www.ainonline.com/rss
+
+# ============================================
+# 🛰️ SPACE & SATELLITE
+# ============================================
+https://spacenews.com/feed/
+https://www.nasaspaceflight.com/feed/
+https://www.satellitetoday.com/feed/
+https://spacenews.com/feed/launches/
+
+# ============================================
+# ⚡ ENERGY & CRITICAL INFRASTRUCTURE
+# ============================================
+https://www.energyintel.com/feed/
+https://www.oilprice.com/feed/
+https://www.rigzone.com/feed/
+https://www.offshore-energy.biz/feed/
+https://www.pv-magazine.com/feed/
+
+# ============================================
+# 🌐 STRATEGIC NEWS OUTLETS
+# ============================================
+https://www.reuters.com/feeds/news/worldNews
+http://feeds.reuters.com/reuters/worldNews
+https://www.apnews.com/feeds/world
+https://www.bbc.com/news/world/rss.xml
+https://www.aljazeera.com/xml/rss/all.xml
+https://www.dw.com/en/rss
+https://www.france24.com/en/feeds
+https://www.theguardian.com/world/rss
+https://www.nytimes.com/services/xml/rss/nyt/World.xml
+https://www.washingtonpost.com/newssearch/advanced/rss/
+https://www.thetimes.co.uk/rss
+https://www.ft.com/rss/home/uk
+
+# ============================================
+# 🌍 REGIONAL NEWS
+# ============================================
+https://asia.nikkei.com/feed/
+https://www.scmp.com/rss/feed
+https://www.straitstimes.com/rss
+https://www.thenationalnews.com/rss/feed
+https://africanarguments.org/feed/
+https://issafrica.org/feed/
+https://www.jeuneafrique.com/feed/
+https://www.dialogo-americas.com/feed/
